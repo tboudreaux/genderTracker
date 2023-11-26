@@ -1,0 +1,17 @@
+blinker @ file:///home/conda/feedstock_root/build_artifacts/blinker_1698890160476/work
+click @ file:///home/conda/feedstock_root/build_artifacts/click_1692311806742/work
+Flask @ file:///home/conda/feedstock_root/build_artifacts/flask_1696349106907/work
+flask-crontab==0.1.2
+Flask-SQLAlchemy==3.1.1
+greenlet==3.0.1
+importlib-metadata @ file:///home/conda/feedstock_root/build_artifacts/importlib-metadata_1688754491823/work
+itsdangerous @ file:///home/conda/feedstock_root/build_artifacts/itsdangerous_1648147185463/work
+Jinja2 @ file:///home/conda/feedstock_root/build_artifacts/jinja2_1654302431367/work
+MarkupSafe @ file:///home/conda/feedstock_root/build_artifacts/markupsafe_1695367457567/work
+psycopg2==2.9.9
+setuptools==68.2.2
+SQLAlchemy==2.0.23
+typing_extensions==4.8.0
+Werkzeug @ file:///home/conda/feedstock_root/build_artifacts/werkzeug_1698235201373/work
+wheel==0.42.0
+zipp @ file:///home/conda/feedstock_root/build_artifacts/zipp_1695255097490/work

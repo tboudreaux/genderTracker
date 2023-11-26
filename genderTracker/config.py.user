@@ -1,0 +1,14 @@
+## Copy me to config.py!
+# Update the values for your own setup!
+
+db_type = 'postgresql'
+db_host = '0.0.0.0'
+db_port = '5432'
+db_name = 'arxivsummary'
+db_user = 'postgres'
+db_pass = 'postgres'
+
+uri = f"{db_type}://{db_user}:{db_pass}@{db_host}:{db_port}/{db_name}"
+
+salt = "sjdfh8790sdfaksd;f9304-85-324"
+
