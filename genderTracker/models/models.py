@@ -143,7 +143,7 @@ class Gender(db.Model):
 class Day(db.Model):
     __tablename__ = "days"
     user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('users.uuid'), nullable=False, primary_key=True)
-    gender_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('gender.uuid'), nullable=False, primary_key=True)
+    gender_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('genders.uuid'), nullable=False, primary_key=True)
     date = db.Column(db.Date, nullable=False, default=func.today())
 
     def __init__(self, user_uuid, gender_uuid):
