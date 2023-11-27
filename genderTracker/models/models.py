@@ -20,15 +20,11 @@ class User(db.Model):
     last_city = db.Column(db.String(1000))
     last_timezone = db.Column(db.String(1000))
     num_logins = db.Column(db.Integer, default=0)
-    num_queries = db.Column(db.Integer, default=0)
-    can_query = db.Column(db.Boolean, default=True)
     enabled = db.Column(db.Boolean, default=True)
     admin = db.Column(db.Boolean, default=False)
     salt = db.Column(db.String(100), nullable=False)
 
-    queries = db.relationship('Query', backref='user', lazy=True)
     keys = db.relationship('Key', backref='user', lazy=True)
-    bookmarks = db.relationship('Bookmark', backref='user', lazy=True)
 
     def __init__(self, username, email, password, ip=None, user_agent=None, country=None, city=None, timezone=None, admin=False, enabled=True):
         self.update_username(username)
