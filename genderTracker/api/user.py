@@ -1,7 +1,6 @@
 from genderTracker.setup import app, db
 from genderTracker.utils.auth import token_required, auth_required
 from genderTracker.models.models import User, Key
-print("HERE")
 
 from flask import jsonify, request
 import secrets

@@ -3,7 +3,7 @@
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
       <form>
         <!-- Name Input -->
-        <div class="mb-4">
+        <div v-if="this.$store.state.isGuest" class="mb-4">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="username">
             Name
           </label>
@@ -48,8 +48,8 @@
         </div>
 
         <!-- Submit Button -->
-        <div class="flex items-center justify-between">
-          <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
+        <div v-if="this.$store.state.isAuthenticated" class="flex items-center justify-between">
+          <button @click="submitData" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">
             Submit
           </button>
         </div>
@@ -75,6 +75,9 @@ export default {
     showOtherField(event) {
       this.showOtherGenderField = event.target.value === 'Other';
     },
+    submitData() {
+      // post the data to the server
+    }
   },
 };
 </script>

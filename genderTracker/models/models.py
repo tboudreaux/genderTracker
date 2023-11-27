@@ -140,21 +140,24 @@ class Day(db.Model):
     __tablename__ = "days"
     user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('users.uuid'), nullable=False, primary_key=True)
     gender_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('genders.uuid'), nullable=False, primary_key=True)
-    date = db.Column(db.Date, nullable=False, default=func.today())
+    datetime = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
+    description = db.Column(TEXT, nullable=True)
+    pronouns = db.Column(ARRAY(TEXT), nullable=True)
 
     def __init__(self, user_uuid, gender_uuid):
         self.user_uuid = user_uuid
         self.gender_uuid = gender_uuid
 
     def __repr__(self):
-        return f"<Day: {self.date} ({self.user_uuid})>"
+        return f"<Day: {self.datetime} ({self.user_uuid})>"
 
     def to_dict(self):
         return {
-            "uuid": self.uuid,
             "user_uuid": self.user_uuid,
-            "date": self.date,
-            "gender_uuid": self.gender_uuid
+            "datetime": self.datetime,
+            "gender_uuid": self.gender_uuid,
+            "description": self.description,
+            "pronouns": self.pronouns
             }
 
 class Key(db.Model):

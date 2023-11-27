@@ -6,16 +6,16 @@
                 <!-- Modal Content -->
                 <div class="mb-4">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Username</label>
-                    <input type="text" id="username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
+                    <input ref="usernameInput" type="text" id="username" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
                 <div class="mb-6">
                     <label class="block text-gray-700 text-sm font-bold mb-2" for="password">Password</label>
-                    <input type="password" id="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
+                    <input ref="passwordInput" type="password" id="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline">
                 </div>
                 <div class="flex items-center justify-between">
                     <button @click="closeModal" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">Close</button>
-                    <button class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">Login</button>
-                    <button onclick="loginAsGuest()" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">Continue as Guest</button>
+                    <button @click="login" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">Login</button>
+                    <button @click="loginAsGuest" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" type="button">Continue as Guest</button>
                 </div>
             </div>
         </div>
@@ -24,15 +24,42 @@
 </template>
 
 <script>
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
 export default {
   methods: {
     login() {
       this.$store.commit('login', { isGuest: false });
-      // Additional login logic...
+      const username = this.$refs.usernameInput.value;
+      const password = this.$refs.passwordInput.value;
+
+      const loginPayload = {
+        username : username,
+        password: password
+      };
+
+      axios.post('/login', loginPayload, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => {
+          this.$store.commit('login', { isGuest: false });
+          this.$store.commit('setUser', { user: response.data });
+          Cookies.set('gt_login_token', response.data.token, { expires: response.data.vtime / 1440 })
+
+          this.$emit('close-login-modal'); 
+          this.$store.dispatch('login', {'isGuest': false, 'user': username});
+        })
+        .catch((error) => {
+          console.log("Login failed: " + error)
+        });
     },
     loginAsGuest() {
       this.$store.commit('login', { isGuest: true });
-      // Additional logic for guest mode...
+          this.$emit('close-login-modal'); 
+          this.$store.dispatch('login', {'isGuest': true});
     },
     closeModal() {
       this.$emit('close-login-modal');

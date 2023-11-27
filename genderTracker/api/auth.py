@@ -26,7 +26,7 @@ def login():
         user = User.query.filter_by(email=ID).first()
     if user.check_password(payload['password']):
         token = jwt.encode({'public_id': user.username, 'exp': dt.datetime.utcnow() + dt.timedelta(minutes=token_valid_time)}, app.config['SECRET_KEY'])
-        return jsonify({'token': token, 'expires': dt.datetime.utcnow() + dt.timedelta(minutes=token_valid_time)})
+        return jsonify({'token': token, 'expires': dt.datetime.utcnow() + dt.timedelta(minutes=token_valid_time), 'vtime': token_valid_time})
     return make_response('Could not verify', 401, {'WWW-Authenticate': 'Basic realm="Login required!"'})
 
 @app.route('/login/test')
