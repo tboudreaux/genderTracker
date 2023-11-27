@@ -14,7 +14,8 @@ export default {
       if (this.$store.state.isAuthenticated) {
         this.$store.commit('logout');
       } else {
-        // Open login modal logic...
+        console.log("Login button pressed");
+        this.$emit("auth-button-clicked");
       }
     }
   }
