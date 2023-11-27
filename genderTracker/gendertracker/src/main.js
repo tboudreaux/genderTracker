@@ -24,5 +24,7 @@ if (token){
       console.log("Token validation failed ", error);
     });
 }
+
+store.dispatch('setGenderList');
 app.use(store);
 app.mount('#app');

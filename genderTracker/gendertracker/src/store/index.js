@@ -1,4 +1,5 @@
 import { createStore } from 'vuex';
+import axios from 'axios';
 
 export default createStore({
   state() {
@@ -6,6 +7,7 @@ export default createStore({
       currentUser: null,
       isAuthenticated: false,
       isGuest: false,
+      genderList: null,
       // other states...
     };
   },
@@ -25,6 +27,9 @@ export default createStore({
       state.isGuest = false;
       state.currentUser = null;
     },
+    setGenderList(state, payload) {
+      state.genderList = payload;
+    }
     // other mutations...
   },
   actions: {
@@ -33,6 +38,16 @@ export default createStore({
     },
     logout(context){
       context.commit('logout');
+    },
+    setGenderList(context) {
+      axios
+        .get('/api/gender/list')
+        .then((response) => {
+          context.commit('setGenderList', response.data)
+        })
+        .catch((error) => {
+          console.log(error);
+        });
     }
     // asynchronous operations...
   },

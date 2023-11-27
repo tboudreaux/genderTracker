@@ -138,15 +138,16 @@ class Gender(db.Model):
 
 class Day(db.Model):
     __tablename__ = "days"
-    user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('users.uuid'), nullable=False, primary_key=True)
-    gender_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('genders.uuid'), nullable=False, primary_key=True)
+    uuid = db.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4, unique=True, nullable=False)
+    user_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('users.uuid'), nullable=False)
+    gender_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('genders.uuid'), nullable=False)
     datetime = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
     description = db.Column(TEXT, nullable=True)
-    pronouns = db.Column(ARRAY(TEXT), nullable=True)
 
-    def __init__(self, user_uuid, gender_uuid):
+    def __init__(self, user_uuid, gender_uuid, description=None):
         self.user_uuid = user_uuid
         self.gender_uuid = gender_uuid
+        self.description = description
 
     def __repr__(self):
         return f"<Day: {self.datetime} ({self.user_uuid})>"
@@ -157,7 +158,6 @@ class Day(db.Model):
             "datetime": self.datetime,
             "gender_uuid": self.gender_uuid,
             "description": self.description,
-            "pronouns": self.pronouns
             }
 
 class Key(db.Model):

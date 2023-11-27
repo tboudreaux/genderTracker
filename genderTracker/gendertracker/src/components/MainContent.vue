@@ -15,36 +15,32 @@
           <label class="block text-gray-700 text-sm font-bold mb-2">
             Gender
           </label>
-          <select id="genderSelect" class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" @change="showOtherField">
-            <option>Female</option>
-            <option>Male</option>
-            <option>Non-binary</option>
+          <select v-model="selectedGender" id="genderSelect" class="block appearance-none w-full bg-white border border-gray-400 hover:border-gray-500 px-4 py-2 pr-8 rounded shadow leading-tight focus:outline-none focus:shadow-outline" @change="showOtherField">
+            <option v-for="gender in this.$store.state.genderList" :key=gender[0]>
+              {{ gender[0] }} ({{ gender[1].join('/') }})
+            </option>
             <option>Other</option>
           </select>
         </div>
 
-        <!-- Other Gender Text Field (Initially Hidden) -->
         <div class="mb-4" :class="{'hidden': !showOtherGenderField}" id="otherGender">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="otherGenderInput">
             Please specify
           </label>
-          <input type="text" id="otherGenderInput" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your gender">
+          <div class="flex space-x-2">
+            <input ref="genderName" type="text" id="otherGenderInput1" class="shadow appearance-none border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your gender*">
+            <input ref="pronouns" type="text" id="otherGenderInput2" class="shadow appearance-none border rounded w-1/4 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter your pronouns*">
+            <input ref="genderDescription" type="text" id="otherGenderInput3" class="shadow appearance-none border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Enter a description">
+          </div>
         </div>
 
-        <!-- Pronouns Input -->
-        <div class="mb-4">
-          <label class="block text-gray-700 text-sm font-bold mb-2" for="pronouns">
-            Pronouns
-          </label>
-          <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="pronouns" type="text" placeholder="e.g., She/Her, They/Them">
-        </div>
 
         <!-- Description Area -->
         <div class="mb-6">
           <label class="block text-gray-700 text-sm font-bold mb-2" for="description">
             Description
           </label>
-          <textarea class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Enter description"></textarea>
+          <textarea ref="dailyDescription" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="description" placeholder="Enter description"></textarea>
         </div>
 
         <!-- Submit Button -->
@@ -58,17 +54,30 @@
 
     <!-- Placeholder for Graphical Visualization -->
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-      <h2 class="text-xl mb-4">Graphical Visualization Placeholder</h2>
-      <p>Content will be displayed here in the future.</p>
+      <h2 class="text-xl mb-4">Graphical Visualizations of Gender</h2>
+      <GenderTimeline />
+      <GenderWordCloud />
     </div>
   </div>
 </template>
 
 <script>
+import GenderTimeline from './GenderTimeline.vue'
+import GenderWordCloud from './GenderWordCloud.vue'
+import axios from 'axios';
+import Cookies from 'js-cookie';
+
 export default {
+  components: {
+    GenderTimeline,
+    GenderWordCloud,
+  
+  },
   data() {
     return {
       showOtherGenderField: false,
+      selectedGender: '',
+    
     };
   },
   methods: {
@@ -76,7 +85,38 @@ export default {
       this.showOtherGenderField = event.target.value === 'Other';
     },
     submitData() {
-      // post the data to the server
+      const token = Cookies.get('gt_login_token');
+      const dayDs = this.$refs.dailyDescription.value;
+      var gender = '';
+      var pronouns = '';
+      var genderDescription = '';
+      
+      if (this.selectedGender === 'Other'){
+        gender = this.$refs.genderName.value;
+
+        // eslint-disable-next-line no-useless-escape
+        pronouns = this.$refs.pronouns.value;
+        genderDescription = this.$refs.genderDescription.value;
+        
+      } else{
+        gender = this.selectedGender.split('(')[0].trim();
+        pronouns = this.selectedGender.split('(')[1].split(')')[0].trim();
+      }
+      const payload = {
+        'gender': gender,
+        'pronouns': pronouns,
+        'genderDescription': genderDescription,
+        'dayDescription': dayDs,
+      }
+      axios.post('/api/gender/day', payload, {
+        'x-access-tokens' : token,
+        'Content-Type': 'application/json'
+      })
+      .then((response) => {
+        console.log(response);
+      }, (error) => {
+        console.log(error);
+      })
     }
   },
 };
