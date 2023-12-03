@@ -9,6 +9,10 @@
       <button v-if="this.$store.state.isAuthenticated" @click="openSettings" class="bg-white text-blue-500 font-bold py-2 px-4 rounded">
         <font-awesome-icon icon="gear" class="text-gray-500" />
       </button>
+
+      <button @click="github" class="bg-white text-blue-500 font-bold py-2 px-4 rounded">
+        <font-awesome-icon :icon="['fab', 'github']" />
+      </button>
     </div>
   </div>
 </template>
@@ -30,6 +34,9 @@ export default {
         this.$emit("settings-button-clicked")
       }
     },
+    github() {
+      window.location.href = 'https://github.com/tboudreaux/genderTracker';
+    }
   }
 }
 </script>
