@@ -145,10 +145,11 @@ class Day(db.Model):
     description = db.Column(TEXT, nullable=True)
     name = db.Column(TEXT, nullable=True, default=None)
 
-    def __init__(self, user_uuid, gender_uuid, description=None):
+    def __init__(self, user_uuid, gender_uuid, description=None, name=None):
         self.user_uuid = user_uuid
         self.gender_uuid = gender_uuid
         self.description = description
+        self.name = name
 
     def __repr__(self):
         return f"<Day: {self.datetime} ({self.user_uuid})>"

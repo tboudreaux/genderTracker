@@ -44,7 +44,7 @@ def day_post(current_user):
     if current_user != None:
         newDay = Day(current_user.uuid, g.uuid, description=payload['dayDescription'])
     else:
-        newDay = Day(GUEST_UUID, g.uuid, description=payload['dayDescription'])
+        newDay = Day(GUEST_UUID, g.uuid, description=payload['dayDescription'], name=payload['name'])
     db.session.add(newDay)
 
     db.session.commit()
