@@ -109,11 +109,14 @@ export default {
         'dayDescription': dayDs,
       }
       axios.post('/api/gender/day', payload, {
+        headers : {
         'x-access-tokens' : token,
         'Content-Type': 'application/json'
+        },
       })
       .then((response) => {
         console.log(response);
+    
       }, (error) => {
         console.log(error);
       })

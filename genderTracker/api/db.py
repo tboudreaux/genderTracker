@@ -23,22 +23,22 @@ def register_new_gender(name, pronouns, description):
 
 
 @app.route('/api/gender/register', methods=['POST'])
-@auth_requested
-def gender_post(current_user):
+def gender_post():
     payload = request.get_json()
     genderName = payload['gender']
     pronouns = re.split(DELIMPATTERN, payload['pronouns'])
-    register_new_gender(genderName, pronouns, payload['description'])
-    return jsonify({'success': True}), 201
+    success = register_new_gender(genderName, pronouns, payload['description'])
+    if success:
+        return jsonify({'success': True}), 201
+    return jsonify({'success': False}), 409
 
 @app.route('/api/gender/day', methods=['POST'])
 @auth_requested
 def day_post(current_user):
     payload = request.get_json()
-    print(payload)
     genderName = payload['gender']
     pronouns = re.split(DELIMPATTERN, payload['pronouns'])
-    register_new_gender(genderName, pronouns, payload['genderDescription'])
+    success = register_new_gender(genderName, pronouns, payload['genderDescription'])
     g = Gender.query.filter_by(name=genderName).first()
 
     if current_user != None:
@@ -48,7 +48,7 @@ def day_post(current_user):
     db.session.add(newDay)
 
     db.session.commit()
-    return jsonify({'success': True}), 201
+    return jsonify({'success': True, 'newGender': success}), 201
 
 @app.route('/api/gender/list', methods=['GET'])
 def get_all_genders():

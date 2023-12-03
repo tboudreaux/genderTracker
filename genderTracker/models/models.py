@@ -143,6 +143,7 @@ class Day(db.Model):
     gender_uuid = db.Column(UUID(as_uuid=True), db.ForeignKey('genders.uuid'), nullable=False)
     datetime = db.Column(db.DateTime(timezone=True), default=func.now(), nullable=False)
     description = db.Column(TEXT, nullable=True)
+    name = db.Column(TEXT, nullable=True, default=None)
 
     def __init__(self, user_uuid, gender_uuid, description=None):
         self.user_uuid = user_uuid

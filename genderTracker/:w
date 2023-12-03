@@ -181,6 +181,9 @@ def auth_required(f):
 def auth_requested(f):
     @wraps(f)
     def decorator(*args, **kwargs):
+        print("=====================================")
+        print(request.headers)
+        print("=====================================")
         if 'x-access-tokens' in request.headers:
             return token_requested(f)(*args, **kwargs)
         elif 'x-access-key' in request.headers:
