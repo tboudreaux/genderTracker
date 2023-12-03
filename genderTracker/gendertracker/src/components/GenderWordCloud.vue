@@ -1,67 +1,73 @@
 <template>
-  <div id="genderWorldCloud"></div>
+  <div id="genderWordCloud" class="w-full h-full"></div>
 </template>
 
 <script>
 import * as d3 from 'd3';
-// import d3Cloud from 'd3-cloud';
+import d3Cloud from 'd3-cloud';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { watch, computed, onMounted } from 'vue';
+import { useStore } from 'vuex';
+
 
 export default {
-  name: 'GenderWorldCloud',
-  mounted() {
-    this.fetchDataAndRenderCloud();
-  },
-  methods: {
-    async fetchDataAndRenderCloud() {
-      try {
-        const response = await axios.get('/api/gender/history', {
-          headers: { 'x-access-token': Cookies.get('gt_login_token') }
-        });
-        console.log(response.data);
+  name: 'GenderWordCloud',
+  setup() {
+    const store = useStore();
+    const isAuthenticated = computed(() => store.state.isAuthenticated);
+    const submissions = computed(() => store.state.submissions);
 
-        const formattedData = this.prepareDataForWordCloud(response.data);
-        console.log(formattedData);
-         
-        this.renderWorldCloud(formattedData);
+    const fetchDataAndRenderCloud = async () => {
+      console.log("Fetch and Render starting for world cloud");
+      try {
+        console.log("GET request with token ", Cookies.get('gt_login_token'));
+        const response = await axios.get('/api/gender/history', {
+          headers: { 'x-access-tokens': Cookies.get('gt_login_token') }
+        });
+
+        const formattedData = prepareDataForWordCloud(response.data);
+        renderWordCloud(formattedData);
       } catch (error) {
         console.error('Error fetching data:', error);
       }
-    },
-    renderWorldCloud(wordsArray) {
-      /* eslint-disable no-unused-vars */
+    };
 
-      var layout = d3.layout.cloud()
-                     .size([800, 400])
-                     .words(wordsArray.map(function(d) {
-                       return {text: d.word, size: d.size};
-                     }))
-                     .padding(5)
-                     .rotate(function() { return ~~(Math.random() * 2) * 90; })
-                     .font("Impact")
-                     .fontSize(function(d) { return d.size; })
-                     .on("end", draw);
+    const renderWordCloud = (data) => {
+      const svgDiv = d3.select('#genderWordCloud');
+      svgDiv.selectAll("svg").remove();
+      const width = svgDiv.node().getBoundingClientRect().width;
+      const height = svgDiv.node().getBoundingClientRect().height;
+
+      const layout = d3Cloud()
+                      .size([width, height])
+                      .words(data.map(d => ({text: d.text, size: d.size * 10})))
+                      .padding(5)
+                      .rotate(() => ~~(Math.random() * 2) * 90)
+                      .font('Impact')
+                      .fontSize(d => d.size)
+                      .on('end', words => {
+      // Render the word cloud
+      const svg = svgDiv.append('svg')
+         .attr('width', layout.size()[0])
+         .attr('height', layout.size()[1])
+         .append('g')
+         .attr('transform', `translate(${layout.size()[0] / 2}, ${layout.size()[1] / 2})`);
+
+      svg.selectAll('text')
+         .data(words)
+         .enter().append('text')
+         .style('font-size', d => `${d.size}px`)
+         .style('font-family', 'Impact')
+         .attr('text-anchor', 'middle')
+         .attr('transform', d => `translate(${d.x}, ${d.y}) rotate(${d.rotate})`)
+         .text(d => d.text);
+        });
+
       layout.start();
-      function draw(words) {
-        d3.select("#genderWordCloud").append("svg")
-            .attr("width", layout.size()[0])
-            .attr("height", layout.size()[1])
-          .append("g")
-            .attr("transform", "translate(" + layout.size()[0] / 2 + "," + layout.size()[1] / 2 + ")")
-          .selectAll("text")
-            .data(words)
-          .enter().append("text")
-            .style("font-size", function(d) { return d.size + "px"; })
-            .style("font-family", "Impact")
-            .attr("text-anchor", "middle")
-            .attr("transform", function(d) {
-              return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
-            })
-            .text(function(d) { return d.text; });
-      }
-    },
-    prepareDataForWordCloud(jsonData) {
+    };
+
+    const prepareDataForWordCloud = (jsonData) => {
       let allDescriptions = jsonData.map(item => item.description).join(" ");
       let words = allDescriptions.match(/\b(\w+)\b/g);
       let wordCounts = words.reduce((acc, word) => {
@@ -74,6 +80,26 @@ export default {
           return {text: word, size: wordCounts[word]};
       });
     }
- }
-};
+
+
+    watch(isAuthenticated, (newValue, oldValue) => {
+      fetchDataAndRenderCloud();
+      console.log("Updating Word Cloud due to user change. (", oldValue, " -> ", newValue, ')');
+    });
+
+    watch(submissions, (newValue, oldValue) => {
+      fetchDataAndRenderCloud();
+      console.log("Updating World Cloud due to submission (", oldValue, " -> ", newValue, ')');
+    });
+
+    onMounted(() => {
+      fetchDataAndRenderCloud();
+    });
+
+    return {
+      isAuthenticated
+    };
+  }
+
+}
 </script>

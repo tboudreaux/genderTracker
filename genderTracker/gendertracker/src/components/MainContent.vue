@@ -54,10 +54,16 @@
 
     <!-- Placeholder for Graphical Visualization -->
     <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
-      <h2 class="text-xl mb-4">Graphical Visualizations of Gender</h2>
-      <GenderTimeline />
-      <GenderWordCloud />
+    <h2 class="text-xl mb-4">Graphical Visualizations of Gender</h2>
+    <div class="flex flex-col md:flex-row">
+      <div class="md:w-1/2 h-96">
+        <GenderTimeline />
+      </div>
+      <div class="md:w-1/2 h-96" >
+        <GenderWordCloud />
+      </div>
     </div>
+  </div>
   </div>
 </template>
 
@@ -71,7 +77,7 @@ export default {
   components: {
     GenderTimeline,
     GenderWordCloud,
-  
+
   },
   data() {
     return {
@@ -116,7 +122,15 @@ export default {
       })
       .then((response) => {
         console.log(response);
-    
+        this.$emit('submission-button-pressed');
+        this.$refs.dailyDescription.value = '';
+        this.$store.state.submissions += 1;
+        if (this.selectedGender === 'Other') {
+            this.$refs.genderName.value = '';
+            this.$refs.pronouns.value = '';
+            this.$refs.genderDescription.value = '';
+          }
+        this.selectedGender = '';
       }, (error) => {
         console.log(error);
       })

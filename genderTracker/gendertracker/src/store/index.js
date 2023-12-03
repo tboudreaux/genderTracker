@@ -5,7 +5,9 @@ export default createStore({
   state() {
     return {
       currentUser: null,
+      currentUserPublic: null,
       isAuthenticated: false,
+      submissions: 0,
       isGuest: false,
       genderList: null,
       // other states...
@@ -16,9 +18,11 @@ export default createStore({
       state.isAuthenticated = true;
       state.isGuest = payload.isGuest;
       if (state.isGuest == true) {
-        state.currentUser = 'Guest'
+        state.currentUser = 'Guest';
+        state.currentUserPublic = "Guest";
       } else {
         state.currentUser = payload.user;
+        state.currentUserPublic = payload.public;
       }
 
     },
@@ -26,6 +30,7 @@ export default createStore({
       state.isAuthenticated = false;
       state.isGuest = false;
       state.currentUser = null;
+      state.currentUserPublic = null;
     },
     setGenderList(state, payload) {
       state.genderList = payload;
